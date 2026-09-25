@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/core/utils/constants.dart';
 import 'package:mobile/features/auth/bloc/auth_bloc.dart';
 import 'package:mobile/features/auth/bloc/auth_event.dart';
 import 'package:mobile/features/basket/bloc/basket_bloc.dart';
 import 'package:mobile/features/basket/bloc/basket_event.dart';
+import 'package:mobile/features/basket/bloc/basket_state.dart'
+    show BasketState, StateBasketFailure, StateBasketLoaded;
 import 'package:mobile/features/basket/pages/basket_page.dart';
 import 'package:mobile/repositories/basket_repository.dart';
 
@@ -18,7 +21,7 @@ class FundsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final apiClient = ApiClient(baseUrl: 'http://192.168.0.159:3000');
+    final apiClient = ApiClient(baseUrl: API_URL);
 
     return MultiBlocProvider(
       providers: [
@@ -36,95 +39,143 @@ class FundsPage extends StatelessWidget {
   }
 }
 
-class _FundsView extends StatelessWidget {
+class _FundsView extends StatefulWidget {
   const _FundsView();
 
   @override
+  State<_FundsView> createState() => _FundsViewState();
+}
+
+class _FundsViewState extends State<_FundsView> {
+  String? _addingFundId;
+
+  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Mutual Funds'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.shopping_basket_outlined),
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<BasketBloc>(),
-                    child: const BasketPage(),
-                  ),
-                ),
-              );
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthBloc>().add(EventLogoutRequested());
-            },
-          ),
-        ],
-      ),
-      body: BlocBuilder<FundsBloc, FundsState>(
-        builder: (context, state) {
-          if (state is StateFundsLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
+    return BlocListener<BasketBloc, BasketState>(
+      listener: (context, state) {
+        if (state is StateBasketFailure) {
+          setState(() {
+            _addingFundId = null;
+          });
 
-          if (state is StateFundsFailure) {
-            return Center(child: Text(state.message));
-          }
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.message.replaceFirst('Exception: ', '')),
+            ),
+          );
+        }
 
-          if (state is StateFundsLoaded) {
-            if (state.funds.isEmpty) {
-              return const Center(child: Text('No funds available'));
-            }
+        if (state is StateBasketLoaded && _addingFundId != null) {
+          setState(() {
+            _addingFundId = null;
+          });
 
-            return ListView.builder(
-              padding: const EdgeInsets.all(16),
-              itemCount: state.funds.length,
-              itemBuilder: (context, index) {
-                final fund = state.funds[index];
-
-                return Card(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          fund.name,
-                          style: Theme.of(context).textTheme.titleMedium,
-                        ),
-                        const SizedBox(height: 8),
-                        Text('Category: ${fund.category}'),
-                        Text('3Y Return: ${fund.threeYearReturn}%'),
-                        Text('Expense Ratio: ${fund.expenseRatio}%'),
-                        Text('Risk: ${fund.riskLevel}'),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              context.read<BasketBloc>().add(
-                                EventAddFund(fund.id),
-                              );
-                            },
-                            child: const Text('Add to Basket'),
-                          ),
-                        ),
-                      ],
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fund added to your basket')),
+          );
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Mutual Funds'),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.shopping_basket_outlined),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => BlocProvider.value(
+                      value: context.read<BasketBloc>(),
+                      child: const BasketPage(),
                     ),
                   ),
                 );
               },
-            );
-          }
+            ),
+            IconButton(
+              icon: const Icon(Icons.logout),
+              onPressed: () {
+                context.read<AuthBloc>().add(EventLogoutRequested());
+              },
+            ),
+          ],
+        ),
+        body: BlocBuilder<FundsBloc, FundsState>(
+          builder: (context, state) {
+            if (state is StateFundsLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-          return const SizedBox.shrink();
-        },
+            if (state is StateFundsFailure) {
+              return Center(child: Text(state.message));
+            }
+
+            if (state is StateFundsLoaded) {
+              if (state.funds.isEmpty) {
+                return const Center(child: Text('No funds available'));
+              }
+
+              return ListView.builder(
+                padding: const EdgeInsets.all(16),
+                itemCount: state.funds.length,
+                itemBuilder: (context, index) {
+                  final fund = state.funds[index];
+
+                  final isAdding = _addingFundId == fund.id;
+
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            fund.name,
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text('Category: ${fund.category}'),
+                          Text('3Y Return: ${fund.threeYearReturn}%'),
+                          Text('Expense Ratio: ${fund.expenseRatio}%'),
+                          Text('Risk: ${fund.riskLevel}'),
+                          const SizedBox(height: 12),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: isAdding
+                                  ? null
+                                  : () {
+                                      setState(() {
+                                        _addingFundId = fund.id;
+                                      });
+
+                                      context.read<BasketBloc>().add(
+                                        EventAddFund(fund.id),
+                                      );
+                                    },
+                              child: isAdding
+                                  ? const SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    )
+                                  : const Text('Add to Basket'),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
+            }
+
+            return const SizedBox.shrink();
+          },
+        ),
       ),
     );
   }

@@ -28,22 +28,6 @@ class BasketBloc extends Bloc<BasketEvent, BasketState> {
     }
   }
 
-  // Future<void> _onAddFund(EventAddFund event, Emitter<BasketState> emit) async {
-  //   final currentFunds = _currentFunds();
-
-  //   emit(StateBasketLoading(currentFunds));
-
-  //   try {
-  //     await repository.addFund(event.fundId);
-
-  //     final funds = await repository.getBasket();
-
-  //     emit(StateBasketLoaded(funds));
-  //   } catch (error) {
-  //     emit(StateBasketFailure(error.toString(), currentFunds));
-  //   }
-  // }
-
   Future<void> _onAddFund(EventAddFund event, Emitter<BasketState> emit) async {
     final currentFunds = _currentFunds();
 

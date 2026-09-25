@@ -1,8 +1,12 @@
+const path = require('path');
 const { initializeApp, cert } = require('firebase-admin/app');
 const { getAuth } = require('firebase-admin/auth');
 const { getFirestore } = require('firebase-admin/firestore');
 
-const serviceAccount = require('../../serviceAccountKey.json');
+const serviceAccount = require(
+  process.env.FIREBASE_SERVICE_ACCOUNT_PATH ||
+  path.join(__dirname, '../../serviceAccountKey.json')
+);
 
 const app = initializeApp({
   credential: cert(serviceAccount),
@@ -11,7 +15,4 @@ const app = initializeApp({
 const auth = getAuth(app);
 const db = getFirestore(app);
 
-module.exports = {
-  auth,
-  db,
-};
+module.exports = { auth, db };
