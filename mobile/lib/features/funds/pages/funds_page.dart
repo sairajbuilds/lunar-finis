@@ -49,6 +49,10 @@ class _FundsView extends StatefulWidget {
 class _FundsViewState extends State<_FundsView> {
   String? _addingFundId;
 
+  String _capitalize(String value) {
+    return value[0].toUpperCase() + value.substring(1);
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocListener<BasketBloc, BasketState>(
@@ -124,7 +128,6 @@ class _FundsViewState extends State<_FundsView> {
                   final isAdding = _addingFundId == fund.id;
 
                   return Card(
-                    margin: const EdgeInsets.only(bottom: 12),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
@@ -132,14 +135,54 @@ class _FundsViewState extends State<_FundsView> {
                         children: [
                           Text(
                             fund.name,
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: Theme.of(context).textTheme.titleMedium
+                                ?.copyWith(fontWeight: FontWeight.w600),
                           ),
+
+                          const SizedBox(height: 6),
+
+                          Text(
+                            '${_capitalize(fund.category)} · ${_capitalize(fund.riskLevel)} Risk',
+                            style: Theme.of(context).textTheme.bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurfaceVariant,
+                                ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('3Y Return'),
+                              Text(
+                                '${fund.threeYearReturn}%',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+
                           const SizedBox(height: 8),
-                          Text('Category: ${fund.category}'),
-                          Text('3Y Return: ${fund.threeYearReturn}%'),
-                          Text('Expense Ratio: ${fund.expenseRatio}%'),
-                          Text('Risk: ${fund.riskLevel}'),
-                          const SizedBox(height: 12),
+
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Text('Expense Ratio'),
+                              Text(
+                                '${fund.expenseRatio}%',
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          const SizedBox(height: 16),
+
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(

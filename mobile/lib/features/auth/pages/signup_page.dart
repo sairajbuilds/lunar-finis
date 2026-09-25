@@ -4,16 +4,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import 'signup_page.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+class SignupPage extends StatefulWidget {
+  const SignupPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
+  State<SignupPage> createState() => _SignupPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _SignupPageState extends State<SignupPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
 
@@ -26,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
-  void _login() {
+  void _signup() {
     final email = emailController.text.trim();
     final password = passwordController.text;
 
@@ -38,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
     }
 
     context.read<AuthBloc>().add(
-      EventLoginRequested(email: email, password: password),
+      EventSignUpRequested(email: email, password: password),
     );
   }
 
@@ -47,11 +46,16 @@ class _LoginPageState extends State<LoginPage> {
     final theme = Theme.of(context);
 
     return Scaffold(
+      appBar: AppBar(title: const Text('Create Account')),
       body: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: BlocConsumer<AuthBloc, AuthState>(
             listener: (context, state) {
+              if (state is StateAuthAuthenticated) {
+                Navigator.of(context).pop();
+              }
+
               if (state is StateAuthFailure) {
                 ScaffoldMessenger.of(context)
                     .showSnackBar(SnackBar(content: Text(state.message)));
@@ -65,16 +69,8 @@ class _LoginPageState extends State<LoginPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      Icon(
-                        Icons.account_balance_outlined,
-                        size: 64,
-                        color: theme.colorScheme.primary,
-                      ),
-
-                      const SizedBox(height: 24),
-
                       Text(
-                        'Mutual Fund Basket',
+                        'Create your account',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.bold,
@@ -84,7 +80,7 @@ class _LoginPageState extends State<LoginPage> {
                       const SizedBox(height: 8),
 
                       Text(
-                        'Build and manage your personal fund basket.',
+                        'Start building your personal fund basket.',
                         textAlign: TextAlign.center,
                         style: theme.textTheme.bodyMedium?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
@@ -111,7 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                         obscureText: _obscurePassword,
                         onSubmitted: (_) {
                           if (!isLoading) {
-                            _login();
+                            _signup();
                           }
                         },
                         decoration: InputDecoration(
@@ -138,7 +134,7 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         height: 52,
                         child: ElevatedButton(
-                          onPressed: isLoading ? null : _login,
+                          onPressed: isLoading ? null : _signup,
                           child: isLoading
                               ? const SizedBox(
                                   height: 22,
@@ -147,7 +143,7 @@ class _LoginPageState extends State<LoginPage> {
                                     strokeWidth: 2,
                                   ),
                                 )
-                              : const Text('Login'),
+                              : const Text('Create Account'),
                         ),
                       ),
 
@@ -156,18 +152,14 @@ class _LoginPageState extends State<LoginPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Text("Don't have an account? "),
+                          const Text('Already have an account? '),
                           TextButton(
                             onPressed: isLoading
                                 ? null
                                 : () {
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute(
-                                        builder: (_) => const SignupPage(),
-                                      ),
-                                    );
+                                    Navigator.of(context).pop();
                                   },
-                            child: const Text('Sign Up'),
+                            child: const Text('Login'),
                           ),
                         ],
                       ),
