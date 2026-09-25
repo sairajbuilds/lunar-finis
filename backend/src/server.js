@@ -4,6 +4,7 @@ const express = require('express');
 const cors = require('cors');
 
 const fundsRoutes = require('./routes/funds.routes');
+const basketRoutes = require('./routes/basket.routes');
 
 const app = express();
 
@@ -17,6 +18,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/funds', fundsRoutes);
+app.use('/baskets', basketRoutes);
 
 const PORT = process.env.PORT || 3000;
 

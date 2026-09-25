@@ -1,11 +1,25 @@
-const funds = require('../data/funds');
+const { db } = require('../config/firebase');
 
-function getAllFunds() {
-  return funds;
+async function getAllFunds() {
+  const snapshot = await db.collection('funds').get();
+
+  return snapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
 }
 
-function getFundById(fundId) {
-  return funds.find((fund) => fund.id === fundId);
+async function getFundById(fundId) {
+  const doc = await db.collection('funds').doc(fundId).get();
+
+  if (!doc.exists) {
+    return null;
+  }
+
+  return {
+    id: doc.id,
+    ...doc.data(),
+  };
 }
 
 module.exports = {
