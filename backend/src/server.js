@@ -18,7 +18,7 @@ app.get('/health', (req, res) => {
 });
 
 app.use('/funds', fundsRoutes);
-app.use('/baskets', basketRoutes);
+app.use('/basket', basketRoutes);
 
 const PORT = process.env.PORT || 3000;
 
