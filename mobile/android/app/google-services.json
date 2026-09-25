@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "813378700666",
+    "project_id": "mutual-fund-basket-d1715",
+    "storage_bucket": "mutual-fund-basket-d1715.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:813378700666:android:2d1da68ff17e003f1082c3",
+        "android_client_info": {
+          "package_name": "com.example.mobile"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "813378700666-ha77upjrlddlpc9bi7m7rr9e0a9aduc8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsIx8_KHdBlXRMdJAo1GJgskL_kF5pTd4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "813378700666-ha77upjrlddlpc9bi7m7rr9e0a9aduc8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
