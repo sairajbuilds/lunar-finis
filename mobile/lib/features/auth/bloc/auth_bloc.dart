@@ -12,7 +12,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       super(StateAuthInitial()) {
     on<EventSignUpRequested>(_onSignUpRequested);
     on<EventLoginRequested>(_onLoginRequested);
-    on<LogoutRequested>(_onLogoutRequested);
+    on<EventLogoutRequested>(_onLogoutRequested);
   }
 
   Future<void> _onSignUpRequested(
@@ -52,7 +52,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLogoutRequested(
-    LogoutRequested event,
+    EventLogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
     await _firebaseAuth.signOut();

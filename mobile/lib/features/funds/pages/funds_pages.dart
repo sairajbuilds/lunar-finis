@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mobile/features/auth/bloc/auth_bloc.dart';
+import 'package:mobile/features/auth/bloc/auth_event.dart';
 import 'package:mobile/features/basket/bloc/basket_bloc.dart';
 import 'package:mobile/features/basket/bloc/basket_event.dart';
 import 'package:mobile/features/basket/pages/basket_page.dart';
@@ -54,6 +56,12 @@ class _FundsView extends StatelessWidget {
                   ),
                 ),
               );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () {
+              context.read<AuthBloc>().add(EventLogoutRequested());
             },
           ),
         ],

@@ -14,4 +14,4 @@ class EventLoginRequested extends AuthEvent {
   EventLoginRequested({required this.email, required this.password});
 }
 
-class LogoutRequested extends AuthEvent {}
+class EventLogoutRequested extends AuthEvent {}
